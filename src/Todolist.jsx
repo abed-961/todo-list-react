@@ -3,6 +3,8 @@ import { Box } from "@mui/material";
 
 import Header from "./Header";
 import Nav from "./Nav";
+import Modall from "./Modal";
+import Tasks from "./Tasks";
 
 const formCatinerStyle = {
   width: "90vw",
@@ -14,10 +16,19 @@ const formCatinerStyle = {
   overflow: "scroll",
 };
 export default function ToDoListMain() {
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <Box sx={formCatinerStyle}>
       <Header />
-      <Nav />
+      <Nav handleOpen={handleOpen} />
+      {open ? <Modall handleClose={handleClose} /> : <Tasks />}
     </Box>
   );
 }

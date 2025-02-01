@@ -23,10 +23,10 @@ const button = {
   height: "65%",
 };
 
-export default function Nav() {
+export default function Nav(props) {
   return (
     <Box sx={flex}>
-      <Button variant="contained" sx={button}>
+      <Button variant="contained" sx={button} onClick={props.handleOpen}>
         <span>Add Task </span>
         <img width="25" height="25" src={plusSvg} alt="unfound" />
       </Button>
