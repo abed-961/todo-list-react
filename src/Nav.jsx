@@ -1,5 +1,12 @@
 import React from "react";
-import { Box, Button, FormControl, Select, MenuItem } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 import plusSvg from "./pic/plus-svgrepo-com.svg";
 const flex = {
   display: "flex",
@@ -9,7 +16,7 @@ const flex = {
   borderBottom: "2px solid white",
 };
 
-const select = {
+const selectCss = {
   width: "30%",
   backgroundColor: "white",
   borderRadius: "10px",
@@ -24,17 +31,36 @@ const button = {
 };
 
 export default function Nav(props) {
+  const [selectedValue, setSelectedValue] = React.useState();
+
+  const handleSelected = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
+  React.useEffect(() => {
+    props.filter(selectedValue);
+  }, [selectedValue]);
   return (
     <Box sx={flex}>
-      <Button variant="contained" sx={button} onClick={props.handleOpen}>
+      <Button
+        variant="contained"
+        sx={button}
+        onClick={() => {
+          props.editFalse();
+          props.handleOpen();
+        }}
+      >
         <span>Add Task </span>
         <img width="25" height="25" src={plusSvg} alt="unfound" />
       </Button>
-      <FormControl sx={select}>
+      <FormControl sx={selectCss}>
+        <InputLabel id="demo-simple-select-label">Select</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           label="Age"
+          value={selectedValue}
+          onChange={handleSelected}
         >
           <MenuItem value={"Completed"}>Completed</MenuItem>
           <MenuItem value={"All Task"}>All Task</MenuItem>

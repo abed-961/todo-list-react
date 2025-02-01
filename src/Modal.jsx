@@ -1,6 +1,7 @@
 import React from "react";
 import { TextField, Box, Button, Modal } from "@mui/material";
 
+import { Context } from "./Todolist";
 const button = {
   borderRadius: "5px",
   margin: "0 10px",
@@ -53,34 +54,55 @@ const buttonContainer = {
 export default function Modall(props) {
   const [title, setTitle] = React.useState("");
   const [date, setDate] = React.useState();
+  const [data, setData] = React.useState(React.useContext(Context));
+  const [edit, setEdit] = React.useState();
+
+  React.useEffect(() => {
+    setEdit(data.edit);
+  }, props);
+
+  let titleValues = JSON.parse(localStorage.getItem("titles")); // Name of Titles Array in local Storage
+  let dates = JSON.parse(localStorage.getItem("Dates")); // Name of Dates Array in local Storage
+  let state = JSON.parse(localStorage.getItem("state"));
+
   function checkTask() {
-    let titleValues = JSON.parse(localStorage.getItem("titles")); // Name of Titles Array in local Storage
-    for (let value in titleValues) {
-      if (title == value) {
+    for (let value of titleValues) {
+      if ((edit ? data.title : title) == value) {
         alert("Attention ! This Title is already exist");
         return 0; // if title was exist this will ignore the rest of the code
       }
     }
 
-    saveValues(titleValues);
+    saveValues(titleValues, dates);
   }
-  function saveValues(titles) {
+  function saveValues(titles, dates) {
+    let dateValues = dates;
     let titleValues = titles;
-    let dateValues = JSON.parse(localStorage.getItem("Dates")); // Name of Dates Array in local Storage
-    if (dateValues == null) {
-      dateValues = [];
-      titleValues = [];
+    let bool = state;
+    if (edit) {
+      dateValues.splice(data.index, 1);
+      titleValues.splice(data.index, 1);
+      bool.splice(data.index, 1, false);
+      dateValues.push(data.date);
+      titleValues.push(data.title);
+    } else {
+      dateValues.push(date);
+      titleValues.push(title);
+      bool.push(false);
     }
-    dateValues.push(date);
-    titleValues.push(title);
 
     //adding the current value to array
     dateValues = JSON.stringify(dateValues);
     titleValues = JSON.stringify(titleValues);
+    state = JSON.stringify(bool);
+
     // convert the array to String
     localStorage.setItem("titles", titleValues);
     localStorage.setItem("Dates", dateValues);
+    localStorage.setItem("state", state);
     // save titles and Dates array in localStorage
+
+    props.handleClose();
   }
 
   return (
@@ -96,21 +118,33 @@ export default function Modall(props) {
               label="Title"
               variant="outlined"
               sx={CssTextField}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={
+                edit
+                  ? (event) => setData({ ...data, title: event.target.value })
+                  : (event) => setTitle(event.target.value)
+              }
+              value={edit ? data.title : title}
             />
             <TextField
               label="Date"
               variant="outlined"
               sx={CssTextField}
-              onChange={(event) => setDate(event.target.value)}
+              onChange={
+                edit
+                  ? (event) => setData({ ...data, date: event.target.value })
+                  : (event) => setDate(event.target.value)
+              }
+              value={edit ? data.date : date}
             />
           </div>
           <div style={buttonContainer}>
             <Button variant="contained" sx={button} onClick={checkTask}>
-              Add
+              {edit ? "Edit" : "Add"}
             </Button>
             <Button
-              onClick={props.handleClose}
+              onClick={() => {
+                props.handleClose();
+              }}
               variant="contained"
               sx={{ ...button, backgroundColor: "#f55" }}
             >
